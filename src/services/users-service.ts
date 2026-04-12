@@ -49,3 +49,22 @@ export const loginUser = async ({ email, password }: any) => {
 
 	return { data: token };
 };
+
+export const getCurrentUser = async (token: string) => {
+	// 1. Find session with user relation
+	const session = await db.query.sessions.findFirst({
+		where: eq(sessions.token, token),
+		with: {
+			user: true,
+		},
+	});
+
+	if (!session || !session.user) {
+		throw new Error("Unauthorized");
+	}
+
+	// 2. Remove sensitive data
+	const { password, ...userWithoutPassword } = session.user;
+
+	return { data: userWithoutPassword };
+};
