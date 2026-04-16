@@ -1,7 +1,27 @@
 import { Elysia, t } from "elysia";
-import { registerUser, loginUser, getCurrentUser } from "../services/users-service";
+import { registerUser, loginUser, getCurrentUser, logoutUser } from "../services/users-service";
 
 export const usersRoute = new Elysia({ prefix: "/api" })
+	.delete("/users/logout", async ({ headers: { authorization }, set }) => {
+		if (!authorization.startsWith("Bearer ")) {
+			set.status = 401;
+			return { error: "Unauthorized" };
+		}
+
+		const token = authorization.slice(7);
+
+		try {
+			const result = await logoutUser(token);
+			return result;
+		} catch (error: any) {
+			set.status = 500;
+			return { error: "Internal Server Error" };
+		}
+	}, {
+		headers: t.Object({
+			authorization: t.String()
+		})
+	})
 	.get("/users/current", async ({ headers, set }) => {
 		const auth = headers['authorization'];
 
