@@ -2,7 +2,7 @@ import { Elysia } from "elysia";
 import { db } from "./db";
 import { usersRoute } from "./routes/users-route";
 
-const app = new Elysia()
+export const app = new Elysia()
 	.use(usersRoute)
 	.get("/", () => ({ status: "ok", message: "Elysia server is running" }))
 	.get("/users", async () => {
